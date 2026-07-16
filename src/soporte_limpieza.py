@@ -126,7 +126,58 @@ def clean_songs(df):
     df["decade"] = df["decade"].apply(
     lambda x: f"{x}s" if pd.notna(x) else pd.NA
     )
-    
+def clean_artists(df):
+    """
+    Limpieza y transformación del dataset artists.
+
+    Parámetros:
+    df: DataFrame original
+    """
+
+    df = df.copy()
+
+    # ------------------
+    # ID
+    # ------------------
+    df["id"] = normalize_text(df["id"])
+
+    # ------------------
+    # Name
+    # ------------------
+    df["name"] = normalize_text(df["name"])
+    df["name"] = remove_special_characters(df["name"])
+    df["name"] = df["name"].replace("nan", pd.NA)
+
+    # ------------------
+    # Genres
+    # ------------------
+    df["genres"] = parse_string_list(df["genres"])
+    df["genres"] = clean_list_of_strings(df["genres"])
+
+    # ------------------
+    # Main genre
+    # ------------------
+    df["main_genre"] = normalize_text(df["main_genre"])
+
+    # ------------------
+    # Variables auxiliares
+    # ------------------
+    df["n_genres"] = df["genres"].apply(len)
+
+    # ------------------
+    # Popularity
+    # ------------------
+    df["popularity"] = df["popularity"].clip(0, 100)
+
+    # ------------------
+    # Limpiar caracteres Unicode inválidos
+    # ------------------
+    text_columns = df.select_dtypes(include=["object", "string"]).columns
+
+    for col in text_columns:
+        df[col] = df[col].apply(fix_unicode)
+
+    return df
     # ------------------
     # Popularity per million followers
     # ------------------
