@@ -41,6 +41,7 @@ El desarrollo del proyecto contempla los siguientes puntos:
 ```
 Proyecto_final/
 ├── README.md
+├── Dashboard_Music_Analytics.xlsx
 │
 ├── data/
 │   ├── raw/
@@ -48,21 +49,25 @@ Proyecto_final/
 │   │   └── songs.csv
 │   │
 │   └── processed/
-│   │   ├── 01.songs_clean.csv
-│   │   └── 02.artists_clean.csv
-│   │   └── 03.spotify_final.csv
+│   │   ├── songs_clean.csv
+│   │   └── artists_clean.csv
+│   │   └── music_dataset.csv
 │
 ├── notebooks/
 │   ├── 01.songs_exploracion.ipynb
 │   └── 02.songs_limpieza.ipynb
-│   └── 03.songs_eda.ipynb
-│   └── 04.artists_exploracion.ipynb
-│   └── 05.artists_limpieza.ipynb
-│   └── 06.artists_eda.ipynb
-│   └── 07.merge_y_eda_final.ipynb
+│   └── 03.artists_exploracion.ipynb
+│   └── 04.artists_limpieza.ipynb
+│   └── 05.merge_datasets.ipynb
+│   └── 06.music_eda.ipynb
+│
+├── dashboard/
+│   └── Music_Analytics_Dashboard.xlsx
+│
 └── src/
-    └── soporte_eda.py
+    └── soporte_exploracion.py
     └── soporte_limpieza.py
+    └── soporte_merge.py
     └── soporte_visualizacion.py
 ```
 
