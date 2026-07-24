@@ -12,7 +12,7 @@ def parse_list_column(series):
         try:
             result = ast.literal_eval(x)
             return result if isinstance(result, list) else []
-        except (ValueError, SyntaxError):
+        except (ValueError, SyntaxError, TypeError):
             return []
 
     return series.apply(safe_parse)
@@ -20,38 +20,62 @@ def parse_list_column(series):
 
 def merge_songs_artists(songs_df, artists_df):
     """
-    Une los datasets limpios de canciones y artistas.
+    Prepara el dataset final de música manteniendo
+    una única fila por canción.
+
+    El dataset songs ya contiene las variables de artista
+    agregadas previamente, por lo que no es necesario
+    volver a hacer un merge con artists.
     """
 
-    songs = songs_df.copy()
-    artists = artists_df.copy()
-
     # ------------------
-    # Convertir listas
+    # Copias de seguridad
     # ------------------
 
-    songs["artist_ids"] = parse_list_column(songs["artist_ids"])
+    music = songs_df.copy()
 
     # ------------------
-    # Una fila por artista
+    # Convertir artist_ids
+    # en listas reales
     # ------------------
 
-    songs = songs.explode(
-        "artist_ids",
-        ignore_index=True
+    music["artist_ids"] = parse_list_column(
+        music["artist_ids"]
     )
 
     # ------------------
-    # Merge
+    # Colaboraciones
+    # 0 = No colaboración
+    # 1 = Colaboración
     # ------------------
 
-    music = songs.merge(
-        artists,
-        left_on="artist_ids",
-        right_on="id",
-        how="left",
-        suffixes=("_song", "_artist")
+    music["is_collaboration"] = (
+        music["n_artists"] > 1
+    ).astype(int)
+
+    # ------------------
+    # Tiene géneros de nicho
+    # ------------------
+
+    music["artist_has_genres"] = (
+        music["n_niche_genres"] > 0
     )
+
+    # ------------------
+    # Seguidores en millones
+    # ------------------
+
+    music["artist_followers_millions"] = (
+        music["total_artist_followers"] / 1_000_000
+    ).round(2)
+
+    # ------------------
+    # Comprobar duplicados
+    # ------------------
+
+    music = music.drop_duplicates(
+        subset="id"
+    ).reset_index(drop=True)
 
     # ------------------
     # Renombrar columnas
@@ -59,42 +83,10 @@ def merge_songs_artists(songs_df, artists_df):
 
     music = music.rename(
         columns={
-            "id_song": "song_id",
-            "name_song": "song_name",
-            "popularity_song": "song_popularity",
-
-            "id_artist": "artist_id",
-            "name_artist": "artist_name",
-            "popularity_artist": "artist_popularity",
-
-            "followers": "artist_followers",
-            "genres": "artist_genres",
-
-            "duration_min": "song_duration_min"
+            "id": "song_id",
+            "name": "song_name",
+            "popularity": "song_popularity"
         }
-    )
-
-    # ------------------
-    # Variables auxiliares
-    # ------------------
-
-    music["is_collaboration"] = music["n_artists"] > 1
-
-    music["artist_has_genres"] = (
-        music["n_genres"] > 0
-    )
-
-    music["artist_followers_millions"] = (
-        music["artist_followers"] / 1_000_000
-    ).round(2)
-
-    # ------------------
-    # Eliminar columnas duplicadas
-    # ------------------
-
-    music = music.drop(
-        columns=["artist_ids"],
-        errors="ignore"
     )
 
     return music

@@ -98,3 +98,4 @@ def identificar_columnas_booleanas(df):
     posibles_booleanos = [col for col in df.columns if set(df[col].dropna().unique()) <= {0,1}]
     print(f"Columnas que podrían ser booleanas: {posibles_booleanos}")
     return posibles_booleanos
+
