@@ -15,7 +15,7 @@ El proyecto se desarrolla como parte del **proyecto final**, aplicando técnicas
 El desarrollo del proyecto contempla los siguientes puntos:
 
 - Transformación y limpieza profunda de los datos
-- Análisis descriptivo y estadístico
+- Análisis exploratorio y estadístico descriptivo
 - Visualización de la información
 - Integración de múltiples fuentes de datos
 - Elaboración de un informe explicativo del análisis
